@@ -115,15 +115,17 @@ export const MindmapVisualization = ({ data, onNewMindmap }: MindmapVisualizatio
     // Center the visualization
     g.attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-    // Draw links
+    // Draw links after coordinate conversion
     const links = g.selectAll(".link")
       .data(treeData.links())
       .enter()
       .append("path")
       .attr("class", "link")
-      .attr("d", d3.linkRadial<any, d3.HierarchyPointNode<MindmapNode>>()
-        .angle((d: any) => d.x)
-        .radius((d: any) => d.y))
+      .attr("d", d => {
+        const source = d.source;
+        const target = d.target;
+        return `M${source.x},${source.y}C${source.x},${(source.y + target.y) / 2} ${target.x},${(source.y + target.y) / 2} ${target.x},${target.y}`;
+      })
       .attr("fill", "none")
       .attr("stroke", "hsl(240, 20%, 80%)")
       .attr("stroke-width", 2)
